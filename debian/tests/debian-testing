@@ -132,10 +132,10 @@ sub check_chroot {
     else {
         diag("/dev/ptmx is not a symbolic link");
         ok(-c "$chroot/dev/ptmx",
-            'if /dev/pts is not a symlink it should be a character device');
+            'if /dev/ptmx is not a symlink it should be a character device');
         is(capture(['/usr/bin/stat', '--printf=%t %T %a',
                     "$chroot/dev/ptmx"]), '5 2 666',
-            'if /dev/pts is a device node it should be 5,2 with 0666 permissions');
+            'if /dev/ptmx is a device node it should be 5,2 with 0666 permissions');
         $did_mknod_ptmx = 1;
     }
 
@@ -190,7 +190,7 @@ sub check_chroot {
     # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=817236
     if (! $params{can_mknod_ptmx}) {
         TODO: {
-            local $TODO = "schroot --sbuild doesn't work when /dev/ptmx is ".
+            local $TODO = "pbuilder 0.228.4-1 doesn't work when /dev/ptmx is ".
                 "a symlink to /dev/pts/ptmx";
             check_fake_pbuilder(%params, reference => $reference);
         }

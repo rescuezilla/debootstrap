@@ -269,6 +269,20 @@ while (<$fh>) {
 }
 close $fh;
 
+my $output;
+if (verbose_run([qw(ls -l /dev/ptmx)], '>', \$output)) {
+    diag("/dev/ptmx: $output");
+}
+else {
+    diag("Unable to list /dev/ptmx");
+}
+if (verbose_run([qw(ls -l /dev/pts/ptmx)], '>', \$output)) {
+    diag("/dev/pts/ptmx: $output");
+}
+else {
+    diag("Unable to list /dev/pts/ptmx");
+}
+
 my $can_mknod_ptmx;
 if (run([qw(mknod -m000 ptmx c 5 2)], '&>', '/dev/null')) {
     diag("mknod ptmx succeeded");

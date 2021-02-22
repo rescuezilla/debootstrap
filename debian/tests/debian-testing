@@ -192,11 +192,13 @@ sub check_chroot {
         TODO: {
             local $TODO = "pbuilder 0.228.4-1 doesn't work when /dev/ptmx is ".
                 "a symlink to /dev/pts/ptmx";
-            check_fake_pbuilder(%params, reference => $reference);
+            check_fake_pbuilder(%params, reference => $reference,
+                version => '0.228.4-1');
         }
     }
     else {
-        check_fake_pbuilder(%params, reference => $reference);
+        check_fake_pbuilder(%params, reference => $reference,
+            version => '0.228.4-1');
     }
 }
 

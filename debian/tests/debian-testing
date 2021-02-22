@@ -120,6 +120,20 @@ sub check_chroot {
     }
 
     my $did_mknod_ptmx;
+    my $output;
+
+    if (verbose_run([qw(ls -l), "$chroot/dev/ptmx"], '>', \$output)) {
+        diag("$chroot/dev/ptmx: $output");
+    }
+    else {
+        diag("Unable to list $chroot/dev/ptmx");
+    }
+    if (verbose_run([qw(ls -l), "$chroot/dev/pts/ptmx"], '>', \$output)) {
+        diag("$chroot/dev/pts/ptmx: $output");
+    }
+    else {
+        diag("Unable to list $chroot/dev/pts/ptmx");
+    }
 
     if (-l "$chroot/dev/ptmx") {
         # Necessary if debootstrap is run inside some containers, see

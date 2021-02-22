@@ -203,7 +203,7 @@ sub check_chroot {
 # Specify https mirror to check https mirror specific problem
 # https://bugs.debian.org/896071
 my $mirror = 'https://deb.debian.org/debian';
-my $tmp = $ENV{AUTOPKGTEST_TMP} || $ENV{AUTOPKGTEST_TMP};
+my $tmp = $ENV{AUTOPKGTEST_TMP};
 die "no autopkgtest temporary directory specified" unless $tmp;
 chdir $tmp or die "chdir $tmp: $!";
 

@@ -35,6 +35,8 @@ fi
 [ "$bind_dev" = no ] || mount --bind /dev "$chroot/dev"
 mount --bind /dev/pts "$chroot/dev/pts"
 
+ls -l "/dev/ptmx" | sed -e 's/^/# fake-schroot: outside chroot: /' >&2
+ls -l "/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: outside chroot: /' >&2
 ls -l "$chroot/dev/ptmx" | sed -e 's/^/# fake-schroot: /' >&2
 ls -l "$chroot/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: /' >&2
 

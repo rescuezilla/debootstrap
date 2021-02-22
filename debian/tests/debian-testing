@@ -319,6 +319,10 @@ if (!verbose_run(['debootstrap',
     BAIL_OUT("debootstrap failed: $?");
 }
 
+if (!verbose_run([qw(find chroot.d/dev -ls)], '>&2')) {
+    BAIL_OUT("Unable to list contents of chroot's /dev: $?");
+}
+
 if ($check_non_docker_env) {
     check_chroot(chroot => 'chroot.d', can_mknod_ptmx => $can_mknod_ptmx,
         kernel => $kernel, container => $container, has_systemd => 1);

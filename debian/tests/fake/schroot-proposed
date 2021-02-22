@@ -32,8 +32,11 @@ fi
 [ "$bind_dev" = no ] || mount --bind /dev "$CHROOT_PATH/dev"
 mount -t devpts -o rw,newinstance,ptmxmode=666,mode=620,gid=5 /dev/pts "$CHROOT_PATH/dev/pts"
 
-ls -l "$CHROOT_PATH/dev/ptmx" | sed -e 's/^/# fake-schroot: /' >&2
-ls -l "$CHROOT_PATH/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: /' >&2
+ls -l "/dev/ptmx" | sed -e 's/^/# fake-schroot: outside chroot: /' >&2
+ls -l "/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: outside chroot: /' >&2
+
+ls -l "$CHROOT_PATH/dev/ptmx" | sed -e 's/^/# fake-schroot: after first step: /' >&2
+ls -l "$CHROOT_PATH/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: after first step: /' >&2
 
 mounted_ptmx=no
 
@@ -54,8 +57,8 @@ if stdin_tty="$(tty)"; then
     mounted_console=yes
 fi
 
-ls -l "$CHROOT_PATH/dev/ptmx" | sed -e 's/^/# fake-schroot: /' >&2
-ls -l "$CHROOT_PATH/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: /' >&2
+ls -l "$CHROOT_PATH/dev/ptmx" | sed -e 's/^/# fake-schroot: after fixing mounts: /' >&2
+ls -l "$CHROOT_PATH/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: after fixing mounts: /' >&2
 
 e=0
 chroot "$CHROOT_PATH" "$@" || e=$?

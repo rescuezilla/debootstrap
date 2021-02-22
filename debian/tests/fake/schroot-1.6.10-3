@@ -1,6 +1,13 @@
 #!/bin/sh
 # fake/schroot-1.6.10-3 -- emulate how schroot/1.6.10-3 would chroot.
-# It bind-mounts /dev/pts and maybe /dev from the host system.
+#
+# Please do not modify this script without verifying that its behaviour
+# is still equivalent to the stated versions of schroot. If a future
+# version of schroot changes its behaviour, please copy this script and
+# modify the copy instead.
+#
+# This version has #856877 unfixed. It bind-mounts /dev/pts and maybe
+# /dev from the host system, rather than creating a new instance of /dev/pts.
 # (There is of course a lot more that it does, but these are the parts that
 # affect pty users like script(1).)
 #

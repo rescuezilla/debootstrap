@@ -1,6 +1,9 @@
 #!/bin/sh
 # fake/schroot-proposed -- emulate proposed mount behaviour for schroot
 #
+# This version emulates the behaviour proposed on #856877. If it needs
+# changing, please update the proposed patch on #856877 too.
+#
 # Copyright © 2017 Simon McVittie
 # SPDX-License-Identifier: MIT
 # (see debian/copyright)

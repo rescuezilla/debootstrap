@@ -1,4 +1,4 @@
-debootstrap (1.0.127) UNRELEASED; urgency=medium
+debootstrap (1.0.127) unstable; urgency=medium
 
   [ Heysion Yuan ]
   * add usrmerge support loongarch64.
@@ -21,7 +21,7 @@ debootstrap (1.0.127) UNRELEASED; urgency=medium
   * setup_merged_usr: create skip flag when merged-usr is disabled on bookworm+
   * Add usr-is-merged to the required set on testing/unstable
 
- -- Dimitri John Ledkov <dimitri.ledkov@canonical.com>  Mon, 25 Jul 2022 13:25:12 +0100
+ -- Dimitri John Ledkov <dimitri.ledkov@canonical.com>  Mon, 25 Jul 2022 13:25:39 +0100
 
 debootstrap (1.0.126+nmu1) unstable; urgency=medium
 

@@ -1,8 +1,15 @@
-debootstrap (1.0.128) UNRELEASED; urgency=medium
+debootstrap (1.0.127+nmu1) unstable; urgency=medium
 
+  * Non-maintainer upload.
+
+  [ Ansgar ]
+  * debootstrap: optionally exclude specific dependencies
+  * debian-common: exclude usrmerge when installing usr-is-merged
+
+  [ Samuel Thibault ]
   * Enable usrmerge on hurd-i386 too.
 
- -- Samuel Thibault <sthibault@debian.org>  Wed, 24 Aug 2022 12:58:35 +0200
+ -- Luca Boccassi <bluca@debian.org>  Sat, 24 Sep 2022 14:07:46 +0100
 
 debootstrap (1.0.127) unstable; urgency=medium
 

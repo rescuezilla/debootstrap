@@ -16,4 +16,4 @@ Depends:
  python3-debian,
  python3-flask,
  python3-requests,
-Restrictions: allow-stderr, needs-root
+Restrictions: allow-stderr

@@ -1587,6 +1587,9 @@ resolve_deps () {
 				NEWPKGS="$NEWPKGS $("$PKGDETAILS" GETDEPS "$pkgdest" $PKGS)"
 			done
 		done
+		if [ -n "${EXCLUDE_DEPENDENCY:-}" ]; then
+			NEWPKGS="$(without "$NEWPKGS" "$EXCLUDE_DEPENDENCY")"
+		fi
 		PKGS=$(echo "$PKGS $NEWPKGS" | tr ' ' '\n' | sort | uniq)
 		local REALPKGS=""
 		for s in $SUITE $EXTRA_SUITES; do

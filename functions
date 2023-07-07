@@ -1368,7 +1368,11 @@ setup_dselect_method () {
 # multilib library packages.
 setup_merged_usr() {
 	if doing_variant buildd && [ -z "$MERGED_USR" ]; then
-		MERGED_USR="no"
+	    case "$CODENAME" in
+		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
+		    MERGED_USR="no"
+		    ;;
+	    esac
 	fi
 
 	if [ "$MERGED_USR" = "no" ]; then

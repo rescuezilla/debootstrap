@@ -1595,7 +1595,7 @@ resolve_deps () {
 	while [ "$PKGS" != "" ]; do
 		local NEWPKGS=""
 		for s in $SUITE $EXTRA_SUITES; do
-			for c in ${COMPONENTS:-$(echo ${USE_COMPONENTS} | tr '|' ' ')}; do
+			for c in ${COMPONENTS:-$(echo "${USE_COMPONENTS}" | tr '|' ' ')}; do
 				local path="dists/$s/$c/binary-$ARCH/Packages"
 				local pkgdest="$TARGET/$($DLDEST pkg "$s" "$c" "$ARCH" "$m1" "$path")"
 				NEWPKGS="$NEWPKGS $("$PKGDETAILS" GETDEPS "$pkgdest" $PKGS)"
@@ -1607,7 +1607,7 @@ resolve_deps () {
 		PKGS=$(echo "$PKGS $NEWPKGS" | tr ' ' '\n' | sort | uniq)
 		local REALPKGS=""
 		for s in $SUITE $EXTRA_SUITES; do
-			for c in ${COMPONENTS:-$(echo ${USE_COMPONENTS} | tr '|' ' ')}; do
+			for c in ${COMPONENTS:-$(echo "${USE_COMPONENTS}" | tr '|' ' ')}; do
 				local path="dists/$s/$c/binary-$ARCH/Packages"
 				local pkgdest="$TARGET/$($DLDEST pkg "$s" "$c" "$ARCH" "$m1" "$path")"
 				REALPKGS="$REALPKGS $("$PKGDETAILS" PKGS REAL "$pkgdest" $PKGS | sed -n 's/ .*REAL.*$//p')"
@@ -1626,7 +1626,7 @@ setup_available () {
 	m1="${MIRRORS%% *}"
 
 	for s in $SUITE $EXTRA_SUITES; do
-		for c in ${COMPONENTS:-$(echo ${USE_COMPONENTS} | tr '|' ' ')}; do
+		for c in ${COMPONENTS:-$(echo "${USE_COMPONENTS}" | tr '|' ' ')}; do
 			path="dists/$s/$c/binary-$ARCH/Packages"
 			pkgdest="$TARGET/$($DLDEST pkg "$s" "$c" "$ARCH" "$m1" "$path")"
 			# XXX: What if a package is in more than one component?

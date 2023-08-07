@@ -242,6 +242,7 @@ detect_container () {
 	else
 		CONTAINER=""
 	fi
+	# TODO: detect sub-hurds
 }
 
 ########################################################## variant handling
@@ -1189,10 +1190,9 @@ setup_proc () {
 		fi
 		;;
 	    hurd*)
-		# firmlink $TARGET/{dev,servers,proc} to the system ones.
-		settrans -a "$TARGET/dev" /hurd/firmlink /dev
-		settrans -a "$TARGET/servers" /hurd/firmlink /servers
-		settrans -a "$TARGET/proc" /hurd/firmlink /proc
+		if [ "$TARGET" != / ]; then
+			settrans -a "$TARGET/proc" /hurd/firmlink /proc
+		fi
 		;;
 	    *)
 		umount_on_exit /dev/pts
@@ -1246,6 +1246,9 @@ setup_devices () {
 	    freebsd)
 		;;
 	    hurd*)
+		touch "$TARGET/servers/exec"
+		touch "$TARGET/servers/startup"
+		touch "$TARGET/dev/console"
 		;;
 	    *)
 		if [ "$CONTAINER" = "lxc" ] || [ "$CONTAINER" = "lxc-libvirt" ]; then
@@ -1273,8 +1276,14 @@ setup_dynamic_devices () {
 		mount -t devfs devfs "$TARGET/dev"
 		mount -t fdescfs -o linrdlnk fdescfs "$TARGET/dev/fd" ;;
 	    hurd*)
-	        # Use the setup-translators of the hurd package
-	        in_target /usr/lib/hurd/setup-translators -k ;;
+		# Use the setup-translators of the hurd package
+		in_target /usr/lib/hurd/setup-translators -k
+		# firmlink $TARGET/{dev,servers} to the system ones.
+		if [ "$TARGET" != / ]; then
+			settrans -a "$TARGET/dev" /hurd/firmlink /dev
+			settrans -a "$TARGET/servers" /hurd/firmlink /servers
+		fi
+		;;
 	esac
 }
 

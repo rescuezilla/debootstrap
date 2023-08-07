@@ -1,3 +1,9 @@
+debootstrap (1.0.129) UNRELEASED; urgency=medium
+
+  * hurd: Fix debootstrap --second-stage on native runs.
+
+ -- Samuel Thibault <sthibault@debian.org>  Sat, 20 May 2023 22:56:36 +0200
+
 debootstrap (1.0.128+nmu5) unstable; urgency=medium
 
   * Non-maintainer upload.

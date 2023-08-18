@@ -1,7 +1,8 @@
 debootstrap (1.0.130) unstable; urgency=medium
 
-  [ Fatih Altun ]
   * Team upload.
+
+  [ Fatih Altun ]
   * Add Pardus support
 
   [ Denis 'GNUtoo' Carikli ]

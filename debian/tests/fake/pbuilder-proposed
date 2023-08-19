@@ -1,8 +1,18 @@
 #!/bin/sh
-# fake/pbuilder-proposed -- emulate how pbuilder is proposed to chroot in
-# future.
+# fake/pbuilder-0.231 -- emulate how pbuilder >= 0.228.6 sets up its chroot
 #
-# Copyright © 2017 Simon McVittie
+# Please do not modify this script without verifying that its behaviour
+# is still equivalent to the stated versions of pbuilder. If a future
+# version of pbuilder changes its behaviour, please copy this script and
+# modify the copy instead.
+#
+# This has #841935 fixed (commit 4a4134dd). It was checked for equivalence
+# to pbuilder 0.231, which is the version included in Debian 11 and 12,
+# but the versions in Debian 10 and 9 have equivalent code here.
+#
+# Reference: pbuilder/pbuilder-modules, search for dev/pts.
+#
+# Copyright © 2017-2021 Simon McVittie
 # SPDX-License-Identifier: MIT
 # (see debian/copyright)
 
@@ -15,18 +25,15 @@ if test -z "$BUILDPLACE" || test -z "$1"; then
 	exit 2
 fi
 
-devpts_options="noexec,nosuid,gid=5,mode=620"
-
 mkdir -p "$BUILDPLACE/dev/pts"
-if ! mount -t devpts none "$BUILDPLACE/dev/pts" -o "$devpts_options,newinstance,ptmxmode=666"; then
-    mount -t devpts none "$BUILDPLACE/dev/pts" -o "$devpts_options"
-fi
+TTYGRP=5
+TTYMODE=620
+mount -t devpts devpts "$BUILDPLACE/dev/pts" -o "newinstance,noexec,nosuid,gid=$TTYGRP,mode=$TTYMODE,ptmxmode=0666"
 
 mounted_ptmx=no
 
-if [ -e "$BUILDPLACE/dev/pts/ptmx" ] && \
-        ! [ -L "$BUILDPLACE/dev/ptmx" ]; then
-    chmod 666 "$BUILDPLACE/dev/pts/ptmx"
+if ! [ -L "$BUILDPLACE/dev/ptmx" ]; then
+    echo "# fake-pbuilder: redirecting /dev/ptmx to /dev/pts/ptmx" >&2
     mount --bind "$BUILDPLACE/dev/pts/ptmx" "$BUILDPLACE/dev/ptmx"
     mounted_ptmx=yes
 fi
@@ -35,9 +42,11 @@ mounted_console=no
 
 if stdin_tty="$(tty)"; then
     if [ ! -e "$BUILDPLACE/dev/console" ]; then
-        mknod -m700 "$BUILDPLACE/dev/console" c 5 1
+        echo "# fake-pbuilder: creating /dev/console" >&2
+        mknod -m600 "$BUILDPLACE/dev/console" c 5 1
     fi
 
+    echo "# fake-pbuilder: mounting $stdin_tty over /dev/console" >&2
     mount --bind "$stdin_tty" "$BUILDPLACE/dev/console"
     mounted_console=yes
 fi

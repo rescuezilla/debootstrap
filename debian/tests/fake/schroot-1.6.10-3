@@ -11,20 +11,22 @@
 # (There is of course a lot more that it does, but these are the parts that
 # affect pty users like script(1).)
 #
-# Copyright © 2017 Simon McVittie
+# Copyright © 2017-2023 Simon McVittie
 # SPDX-License-Identifier: MIT
 # (see debian/copyright)
 
 set -e
 
-# /etc/schroot/default/fstab
+# Reference: /etc/schroot/default/fstab
+# (in schroot source tree: etc/profile-templates/default/linux/fstab)
 bind_dev=yes
 
 while true; do
 	case "$1" in
 		(--sbuild)
 			shift
-			# /etc/schroot/sbuild/fstab
+			# Reference: /etc/schroot/sbuild/fstab
+			# (source: etc/profile-templates/sbuild/linux/fstab)
 			bind_dev=no
 			;;
 		(*)

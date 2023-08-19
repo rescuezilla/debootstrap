@@ -185,7 +185,7 @@ sub check_chroot {
     }
 
     check_fake_pbuilder(%params, reference => $reference,
-        version => 'proposed');
+        version => '0.231');
 
     # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=817236
     if (! $params{can_mknod_ptmx}) {

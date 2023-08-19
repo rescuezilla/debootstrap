@@ -45,16 +45,26 @@ ls -l "$CHROOT_PATH/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: after first step
 
 mounted_ptmx=no
 
+# Depending on how /dev was set up, /dev/ptmx might either be
+# character device (5,2), or a symbolic link to pts/ptmx.
+# Either way we want it to be equivalent to /dev/pts/ptmx, assuming
+# both exist.
 if [ -e "$CHROOT_PATH/dev/pts/ptmx" ] && \
-        ! [ -L "$CHROOT_PATH/dev/ptmx" ]; then
+        [ -e "$CHROOT_PATH/dev/ptmx" ] && \
+        ! [ "$CHROOT_PATH/dev/pts/ptmx" -ef "$CHROOT_PATH/dev/ptmx" ]; then
     mount --bind "$CHROOT_PATH/dev/pts/ptmx" "$CHROOT_PATH/dev/ptmx"
     mounted_ptmx=yes
 fi
 
 mounted_console=no
 
+# If schroot was invoked from a terminal, we still want to be able to
+# access that terminal. lxc and systemd-nspawn achieve this by
+# binding it onto /dev/console; so can we.
 if stdin_tty="$(tty)"; then
     if [ ! -e "$CHROOT_PATH/dev/console" ]; then
+        # We need something to mount onto, and it might as well be
+        # the correctly-numbered device node.
         mknod -m700 "$CHROOT_PATH/dev/console" c 5 1
     fi
 
@@ -62,6 +72,7 @@ if stdin_tty="$(tty)"; then
     mounted_console=yes
 fi
 
+ls -l "$CHROOT_PATH/dev/console" | sed -e 's/^/# fake-schroot: after fixing mounts: /' >&2
 ls -l "$CHROOT_PATH/dev/ptmx" | sed -e 's/^/# fake-schroot: after fixing mounts: /' >&2
 ls -l "$CHROOT_PATH/dev/pts/ptmx" | sed -e 's/^/# fake-schroot: after fixing mounts: /' >&2
 

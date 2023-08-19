@@ -51,6 +51,7 @@ if stdin_tty="$(tty)"; then
     mounted_console=yes
 fi
 
+ls -l "$BUILDPLACE/dev/console" | sed -e 's/^/# fake-pbuilder: /' >&2
 ls -l "$BUILDPLACE/dev/ptmx" | sed -e 's/^/# fake-pbuilder: /' >&2
 ls -l "$BUILDPLACE/dev/pts/ptmx" | sed -e 's/^/# fake-pbuilder: /' >&2
 

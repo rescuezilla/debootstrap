@@ -18,7 +18,7 @@ debootstrap (1.0.130) unstable; urgency=medium
   * Add Trisquel to scripts dir
 
   [ Helmut Grohne ]
-  * implement merged-/usr by post-merging
+  * implement merged-/usr by post-merging. Closes: #1049898
 
   [ Luca Boccassi ]
   * Add myself to Uploaders

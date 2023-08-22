@@ -1157,7 +1157,15 @@ umount_exit_function () {
 	for dir in $UMOUNT_DIRS; do
 		realdir="$(in_target_nofail readlink -f "$dir")"
 		[ "$realdir" ] || continue
-		( cd / ; umount "$TARGET/${realdir#/}" ) || true
+		# if /proc was recursively bind-mounted, because we are running
+		# inside an unshared user namespace inside docker for example,
+		# then it cannot be recursively unmounted (even when mounted
+		# with rslave) so we do it lazily instead
+		if [ "$dir" = "/proc" ]; then
+			( cd / ; umount --lazy "$TARGET/${realdir#/}" ) || true
+		else
+			( cd / ; umount "$TARGET/${realdir#/}" ) || true
+		fi
 	done
 }
 

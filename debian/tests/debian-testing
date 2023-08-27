@@ -93,15 +93,17 @@ sub check_chroot {
     ok(-x "$chroot/usr/bin/env",
         'chroot should have /usr/bin/env which is Essential');
 
-    for my $p (
-        "root/.ssh",                "run/lock/subsys",
-        "var/cache/private",        "var/lib/private",
-        "var/lib/systemd/coredump", "var/lib/systemd/pstore",
-        "var/log/README",           "var/log/private"
-      )
-    {
-        ok( -e "$chroot/$p",
-            "chroot should have /$p created by systemd-tmpfiles" );
+    if ($params{has_systemd}) {
+        for my $p (
+            "root/.ssh",                "run/lock/subsys",
+            "var/cache/private",        "var/lib/private",
+            "var/lib/systemd/coredump", "var/lib/systemd/pstore",
+            "var/log/README",           "var/log/private"
+          )
+        {
+            ok( -e "$chroot/$p",
+                "chroot should have /$p created by systemd-tmpfiles" );
+        }
     }
 
     ok(-x "$chroot/usr/bin/hello", 'chroot should have /usr/bin/hello due to --include');
@@ -289,7 +291,7 @@ if (!verbose_run(['debootstrap',
 
 if ($check_non_docker_env) {
     check_chroot(chroot => 'chroot.d', can_mknod_ptmx => $can_mknod_ptmx,
-        kernel => $kernel, container => $container);
+        kernel => $kernel, container => $container, has_systemd => 1);
 }
 
 if ($^O ne 'linux') {

@@ -109,8 +109,8 @@ sub check_chroot {
     ok(-x "$chroot/usr/bin/hello", 'chroot should have /usr/bin/hello due to --include');
     ok(-d "$chroot/usr/share/doc", 'chroot should have /usr/share/doc');
 
-    if (!defined $ENV{container} || $ENV{container} ne "lxc") {
-        diag("not running with container=lxc");
+    if (!defined $ENV{container} || $ENV{container} ne "mmdebstrap-unshare") {
+        diag("not running with container=mmdebstrap-unshare");
         ok(-c "$chroot/dev/full", '/dev/full should be a character device');
         is(capture(['/usr/bin/stat', '--printf=%t %T %a', "$chroot/dev/full"]),
             '1 7 666', '/dev/full should be device 1,7 with 0666 permissions');
@@ -165,8 +165,9 @@ sub check_chroot {
 
     # The remaining tests rely on device nodes to either exist or already
     # being bind-mounted. Their setups are not prepared to deal with the
-    # conditions in an environment with an unshared user namespace on lxc.
-    if (defined $ENV{container} && $ENV{container} eq "lxc") {
+    # conditions in an environment with an unshared user namespace as
+    # used in mmdebstrap.
+    if (defined $ENV{container} && $ENV{container} eq "mmdebstrap-unshare") {
         return;
     }
 
@@ -374,7 +375,7 @@ else {
         kernel => $kernel, container => "nspawn");
 }
 
-if (!defined $ENV{container} || $ENV{container} ne "lxc") {
+if (!defined $ENV{container} || $ENV{container} ne "mmdebstrap-unshare") {
     if (!run([qw(rm -fr --one-file-system chroot.d)], '>&2')) {
         BAIL_OUT('Unable to remove chroot.d');
     }

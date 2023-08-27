@@ -357,6 +357,10 @@ elsif ($in_container) {
     diag('in a container according to systemd-detect-virt, not trying to '.
         'use systemd-nspawn');
 }
+elsif (defined $ENV{container} && length $ENV{container}) {
+    diag('in a container according to $container, not trying to '.
+        'use systemd-nspawn');
+}
 elsif (! -d '/run/systemd/system') {
     diag('systemd not booted, not trying to use systemd-nspawn');
 }

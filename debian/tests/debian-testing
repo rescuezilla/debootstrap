@@ -120,6 +120,20 @@ sub check_chroot {
     }
 
     my $did_mknod_ptmx;
+    my $output;
+
+    if (verbose_run([qw(ls -l), "$chroot/dev/ptmx"], '>', \$output)) {
+        diag("$chroot/dev/ptmx: $output");
+    }
+    else {
+        diag("Unable to list $chroot/dev/ptmx");
+    }
+    if (verbose_run([qw(ls -l), "$chroot/dev/pts/ptmx"], '>', \$output)) {
+        diag("$chroot/dev/pts/ptmx: $output");
+    }
+    else {
+        diag("Unable to list $chroot/dev/pts/ptmx");
+    }
 
     if (-l "$chroot/dev/ptmx") {
         # Necessary if debootstrap is run inside some containers, see
@@ -132,10 +146,10 @@ sub check_chroot {
     else {
         diag("/dev/ptmx is not a symbolic link");
         ok(-c "$chroot/dev/ptmx",
-            'if /dev/pts is not a symlink it should be a character device');
+            'if /dev/ptmx is not a symlink it should be a character device');
         is(capture(['/usr/bin/stat', '--printf=%t %T %a',
                     "$chroot/dev/ptmx"]), '5 2 666',
-            'if /dev/pts is a device node it should be 5,2 with 0666 permissions');
+            'if /dev/ptmx is a device node it should be 5,2 with 0666 permissions');
         $did_mknod_ptmx = 1;
     }
 
@@ -156,12 +170,31 @@ sub check_chroot {
         return;
     }
 
-    check_fake_schroot(%params, reference => $reference);
+    # The schroot behaviour proposed to fix #856877 and #983423 works,
+    # even inside (privileged) lxc.
     check_fake_schroot(%params, reference => $reference, version => 'proposed');
     check_fake_schroot(%params, reference => $reference, version => 'proposed',
         extra_argv => ['--sbuild']);
 
-    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=817236
+    # As of 1.6.10-3, or equivalently 1.6.10-11, the default profile
+    # certainly doesn't work in lxc >= 3 or in Docker:
+    # https://bugs.debian.org/983423
+    # It probably won't work in other container managers either, for
+    # similar reasons.
+    if (defined $params{container}) {
+        TODO: {
+            local $TODO = "schroot default profile doesn't work in lxc >= 3 or Docker";
+            check_fake_schroot(%params, reference => $reference,
+                version => '1.6.10-3');
+        }
+    }
+    else {
+        check_fake_schroot(%params, reference => $reference,
+            version => '1.6.10-3');
+    }
+
+    # schroot 1.6.10-3's sbuild profile does work in lxc, but only on newer
+    # kernels: https://bugs.debian.org/856877
     if (Dpkg::Version->new($params{kernel}) < Dpkg::Version->new('4.7') &&
             defined $params{container} && $params{container} eq 'lxc') {
         TODO: {
@@ -184,26 +217,30 @@ sub check_chroot {
             extra_argv => ['--sbuild']);
     }
 
+    # pbuilder >= 0.228.6 works fine
     check_fake_pbuilder(%params, reference => $reference,
-        version => 'proposed');
+        version => '0.231');
 
-    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=817236
+    # Older pbuilder doesn't work if we are in a container where we can't
+    # create the /dev/ptmx device node: https://bugs.debian.org/841935
     if (! $params{can_mknod_ptmx}) {
         TODO: {
-            local $TODO = "schroot --sbuild doesn't work when /dev/ptmx is ".
+            local $TODO = "pbuilder 0.228.4-1 doesn't work when /dev/ptmx is ".
                 "a symlink to /dev/pts/ptmx";
-            check_fake_pbuilder(%params, reference => $reference);
+            check_fake_pbuilder(%params, reference => $reference,
+                version => '0.228.4-1');
         }
     }
     else {
-        check_fake_pbuilder(%params, reference => $reference);
+        check_fake_pbuilder(%params, reference => $reference,
+            version => '0.228.4-1');
     }
 }
 
 # Specify https mirror to check https mirror specific problem
 # https://bugs.debian.org/896071
 my $mirror = 'https://deb.debian.org/debian';
-my $tmp = $ENV{AUTOPKGTEST_TMP} || $ENV{AUTOPKGTEST_TMP};
+my $tmp = $ENV{AUTOPKGTEST_TMP};
 die "no autopkgtest temporary directory specified" unless $tmp;
 chdir $tmp or die "chdir $tmp: $!";
 
@@ -267,6 +304,20 @@ while (<$fh>) {
 }
 close $fh;
 
+my $output;
+if (verbose_run([qw(ls -l /dev/ptmx)], '>', \$output)) {
+    diag("/dev/ptmx: $output");
+}
+else {
+    diag("Unable to list /dev/ptmx");
+}
+if (verbose_run([qw(ls -l /dev/pts/ptmx)], '>', \$output)) {
+    diag("/dev/pts/ptmx: $output");
+}
+else {
+    diag("Unable to list /dev/pts/ptmx");
+}
+
 my $can_mknod_ptmx;
 if (run([qw(mknod -m000 ptmx c 5 2)], '&>', '/dev/null')) {
     diag("mknod ptmx succeeded");
@@ -287,6 +338,10 @@ if (!verbose_run(['debootstrap',
             '--components=main,contrib,non-free',
             $testing, 'chroot.d', $mirror], '>&2')) {
     BAIL_OUT("debootstrap failed: $?");
+}
+
+if (!verbose_run([qw(find chroot.d/dev -ls)], '>&2')) {
+    BAIL_OUT("Unable to list contents of chroot's /dev: $?");
 }
 
 if ($check_non_docker_env) {

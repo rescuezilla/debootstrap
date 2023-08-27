@@ -354,7 +354,7 @@ if ($^O ne 'linux') {
     diag("Cannot use systemd-nspawn on non-Linux");
 }
 elsif ($in_container) {
-    diag('in a container according to systemd --container, not trying to '.
+    diag('in a container according to systemd-detect-virt, not trying to '.
         'use systemd-nspawn');
 }
 elsif (! -d '/run/systemd/system') {

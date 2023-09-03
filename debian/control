@@ -11,6 +11,7 @@ Vcs-Git: https://salsa.debian.org/installer-team/debootstrap.git
 
 Package: debootstrap
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}, wget
 Recommends: gnupg, ${debootstrap:Recommends}
 Suggests: squid-deb-proxy-client, ${debootstrap:Suggests}

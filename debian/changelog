@@ -1,7 +1,5 @@
 debootstrap (1.0.132) unstable; urgency=medium
 
-  * Team upload.
-
   [ Johannes Schauer Marin Rodrigues ]
   * debian/tests/control: run debootstrap with unshared namespaces
 

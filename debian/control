@@ -14,7 +14,7 @@ Package: debootstrap
 Architecture: all
 Multi-Arch: foreign
 Depends: ${misc:Depends}, wget
-Recommends: gnupg, ${debootstrap:Recommends}
+Recommends: gnupg, mount, ${debootstrap:Recommends}
 Suggests: squid-deb-proxy-client, ${debootstrap:Suggests}
 Description: Bootstrap a basic Debian system
  debootstrap is used to create a Debian base system from scratch,

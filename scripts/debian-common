@@ -10,9 +10,17 @@ case $ARCH in
 esac
 
 work_out_debs () {
-	if ! doing_variant buildd; then
-		required="$(get_debs Priority: required)"
-	fi
+	case "$CODENAME" in
+		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
+			# always compute for bookworm and earlier
+			required="$(get_debs Priority: required)"
+			;;
+		*)
+			# only compute when variant is not buildd for trixie and later
+			if ! doing_variant buildd; then
+				required="$(get_debs Priority: required)"
+			fi
+	esac
 
 	if doing_variant - || doing_variant fakechroot; then
 		#required="$required $(get_debs Priority: important)"

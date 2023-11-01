@@ -23,7 +23,12 @@ work_out_debs () {
 		# do not install Priority:required for the buildd variant
 		# explicitly add mawk because we cannot resolve base-files's
 		# virtual pre-depends on awk
-		required="mawk $(get_debs Essential: yes)"
+		case "$CODENAME" in
+			etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
+				# only apply this for trixie and later
+				;;
+			*) required="mawk $(get_debs Essential: yes)";;
+		esac
 	elif doing_variant minbase; then
 		base="apt"
 	fi

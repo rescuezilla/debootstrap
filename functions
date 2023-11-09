@@ -1261,16 +1261,9 @@ setup_devices () {
 		touch "$TARGET/dev/console"
 		;;
 	    *)
-		case "$CONTAINER" in
-		    (lxc | lxc-libvirt | mmdebstrap-unshare)
-			if ! setup_devices_simple; then
-				setup_devices_bind
-			fi
-			return 0
-			;;
-		esac
-
-		setup_devices_simple
+		if ! setup_devices_simple; then
+			setup_devices_bind
+		fi
 		;;
 	esac
 }

@@ -6,3 +6,31 @@ include:
 variables:
   SALSA_CI_DISABLE_BLHC: 1
   SALSA_CI_DISABLE_BUILD_PACKAGE_ANY: 1
+
+# stages can only be overridden not extended, so we have to list all of them
+stages:
+  - provisioning
+  - build
+  - test
+  - test extras
+  - publish # Stage referenced by Salsa-CI template aptly stanza, so must exist even though not used
+
+# This tests running debootstrap inside an unshared user namespace.
+# Inside that namespace, mknod is not available.
+# In such an environment "mount -t proc proc /proc" will not work (see
+# #1031222) so this also tests whether the fallback to bind-mounting
+# proc works as systemd-tmpfiles will otherwise not create several files.
+test-unshare:
+  stage: test extras
+  image: $SALSA_CI_IMAGES_BASE
+  needs:
+    - job: build
+      artifacts: true
+  variables:
+    DEBOOTSTRAP_SCRIPT: $CI_PROJECT_DIR/debootstrap
+    DEBOOTSTRAP_DIR: $CI_PROJECT_DIR
+    AUTOPKGTEST_TMP: /tmp
+  script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y libdistro-info-perl libdpkg-perl libipc-run-perl perl systemd systemd-container ca-certificates mmdebstrap uidmap wget
+    - mmdebstrap --variant=custom --mode=unshare --setup-hook=./debian/tests/debian-testing --skip=update,setup,cleanup - "$AUTOPKGTEST_TMP/chroot.d"
